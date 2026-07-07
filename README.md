@@ -8,8 +8,8 @@ Say `exit tutor` to leave the mode.
 
 Two pieces:
 
-1. **`SKILL.md`**, a Claude Code user skill carrying the full tutor prompt. Every directive is tagged `(hard)` or `(soft)`, the pedagogical instruction-following pattern from LearnLM. It covers the opening ritual, the questioning loop, a three-tier hint ladder with an escape hatch, anti-sycophancy guardrails, and domain adaptations for math, crypto, and spec reading. On invocation it creates a flag file (`.logbook/.study-mode`) in the current project.
-2. **`hooks/study-mode-reminder.sh`**, a flag-gated UserPromptSubmit hook. While the flag exists it re-injects a compact reminder of the hard rules on every turn, so the mode survives long sessions and context compaction. Without the flag it is silent and free. `exit tutor` removes the flag.
+1. **`SKILL.md`**, a Claude Code user skill carrying the full tutor prompt. Every directive is tagged `(hard)` or `(soft)`, the pedagogical instruction-following pattern from LearnLM. It covers the opening ritual, the questioning loop, a three-tier hint ladder with an escape hatch, anti-sycophancy guardrails, and domain adaptations for math, crypto, and spec reading. On invocation it creates a per-session flag file (`~/.claude/study-mode/<session-id>`, keyed by `$CLAUDE_CODE_SESSION_ID`), so nothing is written into the project and parallel sessions, including other simultaneous study sessions, never interfere.
+2. **`hooks/study-mode-reminder.sh`**, a flag-gated UserPromptSubmit hook. While the current session's flag exists it re-injects a compact reminder of the hard rules on every turn, so the mode survives long sessions, context compaction, and `--resume`. Without a matching flag it is silent and free. `exit tutor` removes the flag. `/clear` starts a new session id, which ends study mode (type `/study` to re-arm). Flags orphaned by killed sessions are inert and get pruned after 14 idle days by the next `/study`.
 
 The split solves the fade problem: skill content injects once and washes out of context as a session grows, but the per-turn reminder keeps the tutor honest at turn 50 as well as turn 3.
 
